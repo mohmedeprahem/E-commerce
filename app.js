@@ -12,5 +12,5 @@ mongoose.connect(`mongodb+srv://mohmed123:mohmed123@board-game-shop.vsepsuu.mong
 // Connect to server
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
-  console.log(`connect to server at port: ${port}...`)
+  console.log(`Connect to server at port: ${port}...`)
 })

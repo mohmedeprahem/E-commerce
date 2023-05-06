@@ -1,0 +1,33 @@
+// Package requirement
+const mongoose = require('mongoose');
+const userSchema = new mongoose.Schema({
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    match: /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/
+  },
+  firstName: {
+    type: String,
+    minLength: 1,
+    maxLength: 20
+  },
+  lastName: {
+    type: String,
+    minLength: 1,
+    maxLength: 20
+  },
+  otpCode: Number,
+  optCreatedAt: Date,
+  paymentInfo: {
+    cardNumber: Number,
+    expirationMonth: Number,
+    expirationYear: Number,
+    CardNames: String,
+  },
+  timeStamps: true
+});
+
+const User = mongoose.model('User', userSchema);
+
+module.exports = User
