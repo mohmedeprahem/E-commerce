@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 
 // Build sub-document items that want to buy from user
 const itemSchema = mongoose.Schema({
-  productId: {
+  productIds: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
     ref: 'Product'
