@@ -1,5 +1,6 @@
 // Package requirement
 const nodemailer = require('nodemailer')
+const jwt = require('jsonwebtoken');
 
 // Mongodb collections
 const UserSchema = require('../models/user')
@@ -26,16 +27,23 @@ exports.login = async (req, res, next) => {
         userInfo.otpCreatedAt = oneHourLater
         await userInfo.save()
       } else {
-        userInfo = new UserSchema({
+        const newUser = new UserSchema({
           email: req.body.email,
           otpCode: otp,
           otpCreatedAt: oneHourLater
         });
-        await userInfo.save()
+        userInfo = await newUser.save()
       }
     
     await nodemailerService.sendEmail(otp, req.body.email);
-      
+    console.log(process.env)
+    
+    // Create a JWT containing the user's information
+    const token = jwt.sign({id: userInfo._id}, process.env.SECRET_KEY_JWT);
+
+    // Set the JWT as an HTTP-only cookie
+    res.cookie('jwt', token, { httpOnly: true });
+
     return res.status(201).json({
       success: true,
       isOTPSent: true,
@@ -46,6 +54,4 @@ exports.login = async (req, res, next) => {
     console.error(err)
     return res.status(500).json({ message: err.message });
   }
-  
-
 } 
