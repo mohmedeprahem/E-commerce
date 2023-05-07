@@ -5,6 +5,13 @@ const mongoose = require('mongoose')
 // inti express
 const app = express();
 
+// parse the req.body
+app.use(express.json())
+
+// active routes
+const authRoutes = require('./routes/auth')
+app.use(authRoutes)
+
 // Connect to DataBase
 mongoose.connect(`mongodb+srv://mohmed123:mohmed123@board-game-shop.vsepsuu.mongodb.net/e_commerce`)
 .then(() => console.log(`Connect to database....`))

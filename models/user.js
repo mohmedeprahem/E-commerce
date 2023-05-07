@@ -40,11 +40,11 @@ const addressSchema = new mongoose.Schema({
   },
   postalCode: {
     type: Number,
-    required: ture
+    required: true
   },
   phoneNumber: {
     type: Number,
-    required: ture
+    required: true
   }
 }, { timestamps: true });
 
@@ -67,7 +67,7 @@ const userSchema = new mongoose.Schema({
     maxLength: 20
   },
   otpCode: Number,
-  optCreatedAt: Date,
+  otpCreatedAt: Date,
   paymentInfo: {
     cardNumber: Number,
     expirationMonth: Number,
