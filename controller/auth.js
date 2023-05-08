@@ -65,7 +65,7 @@ exports.verifyEmail = async (req, res, next) => {
     }
   
     // Check if otp valid and not expired
-    if (req.body.OTP !== userInfo.otpCode || userInfo.otpCreatedAt >= Date.now()) {
+    if (req.body.OTP !== userInfo.otpCode || userInfo.otpCreatedAt <= Date.now()) {
       return res.status(400).json({
         success: false,
         statusCode: 400,
