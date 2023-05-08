@@ -13,6 +13,10 @@ app.use(express.json())
 const authRoutes = require('./routes/auth')
 app.use(authRoutes)
 
+// Error hander
+const errorHander = require('./middlewares/errorHander')
+app.use(errorHander)
+
 // Connect to DataBase
 mongoose.connect(`mongodb+srv://mohmed123:mohmed123@board-game-shop.vsepsuu.mongodb.net/e_commerce`)
 .then(() => console.log(`Connect to database....`))

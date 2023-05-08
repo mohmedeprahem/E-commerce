@@ -36,7 +36,6 @@ exports.login = async (req, res, next) => {
       }
     
     await nodemailerService.sendEmail(otp, req.body.email);
-    console.log(process.env)
     
     // Create a JWT containing the user's information
     const token = jwt.sign({id: userInfo._id}, process.env.SECRET_KEY_JWT);
@@ -48,10 +47,9 @@ exports.login = async (req, res, next) => {
       success: true,
       isOTPSent: true,
       message: "Verfiy your email.",
-      userId: "56cb91bdc3464f14678934ca"
+      userId: userInfo._id
     })
   } catch (err) {
-    console.error(err)
-    return res.status(500).json({ message: err.message });
+    next(err)
   }
 } 
