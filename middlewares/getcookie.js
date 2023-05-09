@@ -4,9 +4,9 @@ const jwt = require('jsonwebtoken')
 exports.getUserInfo = (req, res, next) => {
   try {
     req.isLoggedIn = false;
-    const mycookie = req.cookies;
-    if (mycookie) {
-      const decoded = jwt.verify(mycookie.jwt, process.env.SECRET_KEY_JWT);
+    const token = req.cookies.jwt;
+    if (token) {
+      const decoded = jwt.verify(token, process.env.SECRET_KEY_JWT);
       req.user = decoded;
     }
     next()
