@@ -1,5 +1,5 @@
 // Mongodb collections
-const { UserSchema, UserJoiSchema, AddressJoiSchema } = require('../models/user')
+const { UserSchema, UserJoiSchema, AddressJoiSchema, JoiUserName } = require('../models/user')
 
 // @route: 'GET'  /api/v1/user/profile
 // @disc: Get user info   
@@ -54,7 +54,7 @@ exports.postNewAddress = async (req, res, next) => {
       return res.status(400).json({
         success: false,
         statusCode: 400,
-         message: "Bad request."
+        message: "Bad request."
       })
     }
     
@@ -75,6 +75,38 @@ exports.postNewAddress = async (req, res, next) => {
       success: true,
       statusCode: 201,
       message: "New address added."
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
+// @route: 'PUT'  api/v1/user/profile/updateName
+// @disc: Update userName  
+// @access: private(logged in user)
+exports.putUserName = async (req, res, next) => {
+  try {
+    const { error, value } = JoiUserName.validate(req.body);
+    if (error) {
+      return res.status(400).json({
+        success: false,
+        statusCode: 400,
+        message: "Bad request."
+      })
+    }
+
+    // update username
+    const userInfo = await UserSchema.updateOne({_id: req.user.id},{
+      firstName: req.body.firstName,
+      lastName: req.body.lastName
+    })
+
+    // send success 
+    return res.status(201).json({
+      success: true,
+      statusCode: 200,
+      message: "Name updated.",
+      userInfo: req.body
     })
   } catch (err) {
     next(err)

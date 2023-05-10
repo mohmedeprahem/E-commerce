@@ -8,24 +8,24 @@ const addressSchema = new mongoose.Schema(
   country: {
     type: String,
     required: true,
-    maxLength: 50
+    maxlength: 50
   },
   physicalAddress: {
     type: String,
     required: true,
-    maxLength: 100,
+    maxlength: 100,
   },
   firstName: {
     type: String,
     required: true,
-    minLength: 1,
-    maxLength: 40
+    minlength: 1,
+    maxlength: 40
   },
   lastName: {
     type: String,
     required: true,
-    minLength: 1,
-    maxLength: 40
+    minlength: 1,
+    maxlength: 40
   },
   apartmentNumber: {
     type: Number,
@@ -34,14 +34,14 @@ const addressSchema = new mongoose.Schema(
   city: {
     type: String,
     required: true,
-    minLength: 1,
-    maxLength: 30
+    minlength: 1,
+    maxlength: 30
   },
   governorate:{
     type: String,
     required: true,
-    minLength: 1,
-    maxLength: 30
+    minlength: 1,
+    maxlength: 30
   },
   postalCode: {
     type: Number,
@@ -64,13 +64,13 @@ const userSchema = new mongoose.Schema({
   },
   firstName: {
     type: String,
-    minLength: 1,
-    maxLength: 20
+    minlengt: 1,
+    maxlength: 20
   },
   lastName: {
     type: String,
-    minLength: 1,
-    maxLength: 20
+    minlength: 3,
+    maxlength: 20
   },
   otpCode: Number,
   otpCreatedAt: Date,
@@ -109,4 +109,9 @@ const UserJoiSchema = Joi.object({
   addresses: Joi.array().items(AddressJoiSchema).optional()
 });
 
-module.exports = { UserSchema, UserJoiSchema, AddressJoiSchema}
+const JoiUserName = Joi.object({
+  firstName: Joi.string().min(1).max(20),
+  lastName: Joi.string().min(3).max(20)
+})
+
+module.exports = { UserSchema, UserJoiSchema, AddressJoiSchema, JoiUserName}
