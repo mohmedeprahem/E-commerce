@@ -1,10 +1,58 @@
 // Package requirement
 const mongoose = require('mongoose');
+const Joi = require('joi')
 
-// // Define the sub-document in user schema
-// const addressSchema = new mongoose.Schema({
-  
-// }, { timestamps: true });
+// Define the sub-document in user schema
+const addressSchema = new mongoose.Schema(
+{
+  country: {
+    type: String,
+    required: true,
+    maxLength: 50
+  },
+  physicalAddress: {
+    type: String,
+    required: true,
+    maxLength: 100,
+  },
+  firstName: {
+    type: String,
+    required: true,
+    minLength: 1,
+    maxLength: 40
+  },
+  lastName: {
+    type: String,
+    required: true,
+    minLength: 1,
+    maxLength: 40
+  },
+  apartmentNumber: {
+    type: Number,
+    required: true,
+  },
+  city: {
+    type: String,
+    required: true,
+    minLength: 1,
+    maxLength: 30
+  },
+  governorate:{
+    type: String,
+    required: true,
+    minLength: 1,
+    maxLength: 30
+  },
+  postalCode: {
+    type: Number,
+    required: true
+  },
+  phoneNumber: {
+    type: String,
+    required: true
+  }
+}
+, { timestamps: true });
 
 // Define the user collections Schema
 const userSchema = new mongoose.Schema({
@@ -33,59 +81,32 @@ const userSchema = new mongoose.Schema({
     CardNames: String,
   },
   addresses: {
-    type: [{
-      country: {
-        type: String,
-        required: true,
-        maxLength: 50
-      },
-      physicalAddress: {
-        type: String,
-        required: true,
-        maxLength: 100,
-      },
-      firstName: {
-        type: String,
-        required: true,
-        minLength: 1,
-        maxLength: 40
-      },
-      lastName: {
-        type: String,
-        required: true,
-        minLength: 1,
-        maxLength: 40
-      },
-      apartmentNumber: {
-        type: Number,
-        required: true,
-        unique: true 
-      },
-      city: {
-        type: String,
-        required: true,
-        minLength: 1,
-        maxLength: 30
-      },
-      governorate:{
-        type: String,
-        required: true,
-        minLength: 1,
-        maxLength: 30
-      },
-      postalCode: {
-        type: Number,
-        required: true
-      },
-      phoneNumber: {
-        type: String,
-        required: true
-      }
-    }],
+    type: [addressSchema],
     required: true
   },
 }, { timestamps: true });
 
-const User = mongoose.model('User', userSchema);
+const UserSchema = mongoose.model('User', userSchema);
 
-module.exports = User
+// Define Joi schema for AddressSchema
+const AddressJoiSchema = Joi.object({
+  country: Joi.string().required(),
+  physicalAddress: Joi.string().required(),
+  firstName: Joi.string().required(),
+  lastName: Joi.string().required(),
+  apartmentNumber: Joi.number().required(),
+  city: Joi.string().required(),
+  governorate: Joi.string().required(),
+  postalCode:Joi.number().required(),
+  phoneNumber: Joi.string().required(),
+});
+
+// Define Joi schema for UserSchema
+const UserJoiSchema = Joi.object({
+  email: Joi.string().email().required(),
+  firstName: Joi.string(),
+  lastName: Joi.string(),
+  addresses: Joi.array().items(AddressJoiSchema).optional()
+});
+
+module.exports = { UserSchema, UserJoiSchema, AddressJoiSchema}

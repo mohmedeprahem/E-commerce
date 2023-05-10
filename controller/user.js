@@ -1,5 +1,5 @@
 // Mongodb collections
-const UserSchema = require('../models/user')
+const { UserSchema, UserJoiSchema, AddressJoiSchema } = require('../models/user')
 
 // @route: 'GET'  /api/v1/user/profile
 // @disc: Get user info   
@@ -47,11 +47,30 @@ exports.postNewAddress = async (req, res, next) => {
         message: "Not found."
       })
     }
+
+    const userDataValid = AddressJoiSchema.validate(req.body); 
+    if (userDataValid.error) {
+      console.log(userDataValid.error)
+      return res.status(400).json({
+        success: false,
+        statusCode: 400,
+         message: "Bad request."
+      })
+    }
     
-    const isDuplicated = userInfo.addresses.find(address => address.apartmentNumber === req.body.apartmentNumber)
+    userInfo.addresses.push({
+      country: req.body.country,
+      physicalAddress: req.body.physicalAddress,
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      apartmentNumber: req.body.apartmentNumber,
+      city: req.body.city,
+      governorate: req.body.governorate,
+      postalCode: req.body.postalCode,
+      phoneNumber: req.body.phoneNumber
+    })
 
-    console.log(result)
-
+    await userInfo.save()
     return res.status(201).json({
       success: true,
       statusCode: 201,

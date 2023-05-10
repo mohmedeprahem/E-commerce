@@ -3,11 +3,10 @@ const nodemailer = require('nodemailer')
 const jwt = require('jsonwebtoken');
 
 // Mongodb collections
-const UserSchema = require('../models/user')
+const { UserSchema } = require('../models/user')
 
 // Service folder
 const nodemailerService = require('../service/nodemailer');
-const User = require('../models/user');
 
 // @route: 'POST'  /api/v1/auth/login
 // @disc: create new user or login user 
@@ -55,12 +54,12 @@ exports.login = async (req, res, next) => {
 exports.verifyEmail = async (req, res, next) => {
   try {
     // Find user in database
-    const userInfo = await User.findById(req.params.userId);
+    const userInfo = await UserSchema.findById(req.params.userId);
     if(!userInfo) {
       return res.status(404).json({
         success: false,
-        statusCode: 404,
-        message: "Not found."
+        statusCode: 400,
+        message: "Invalid id."
       })
     }
   
