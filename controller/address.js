@@ -85,43 +85,86 @@ exports.getUserAddresses = async (req, res, next) => {
 // @disc: update user address   
 // @access: private(logged in user)
 exports.updateUserAddress = async (req, res, next) => {
-  // Get user Addresses
-  const userInfo = await UserSchema.findById(req.user.id).select('addresses')
-  
-  if (!userInfo) return res.status(500).json({
-    success: false,
-    statusCode: 500,
-    message: "Server error."
-  })
+  try {
+    // Get user Addresses
+    const userInfo = await UserSchema.findById(req.user.id).select('addresses')
+    
+    if (!userInfo) return res.status(500).json({
+      success: false,
+      statusCode: 500,
+      message: "Server error."
+    })
 
-  // Udatate the address
-  const addressDataValid = AddressJoiSchema.validate(req.body); 
-  if (addressDataValid.error) {
-    console.log(addressDataValid)
-    return res.status(400).json({
+    // Udatate the address
+    const addressDataValid = AddressJoiSchema.validate(req.body); 
+    if (addressDataValid.error) {
+      console.log(addressDataValid)
+      return res.status(400).json({
+        success: false,
+        statusCode: 400,
+        message: "Bad request."
+      })
+    }
+
+    const address = userInfo.addresses.id(req.params.addressId);
+
+    if(!address) return res.status(400).json({
       success: false,
       statusCode: 400,
-      message: "Bad request."
-    })
+      message: "Invalid id."
+    })   
+
+    address.set(req.body); 
+    await userInfo.save()
+
+    return res.status(200).json({
+      success: true,
+      statusCode: 200,
+      message: "Address updated successfully.",
+      newAddress: req.body
+    })   
+  } catch(err) {
+    next(err)
   }
+  
+}
 
-  const addressIndex = userInfo.addresses.findIndex(address => {
-    return address._id == req.params.addressId
-  })
+// @route: 'DELETE'  /api/v1/address/addressId
+// @disc: Delete user delete
+// @access: private(logged in user)
+exports.deleteUserAddress = async (req, res, next) => {
+  try {
+    const userInfo = await UserSchema.findById(req.user.id);
+    if (!userInfo) {
+      return res.status(404).json({ 
+        success: false,
+        statusCode: 404,
+        message: "Not found."
+      });
+    }
+    console.log(userInfo.addresses[0]._id)
+    console.log(req.params.addressId)
+    const addressIndex = userInfo.addresses.findIndex(address => {
+      return address._id == req.params.addressId
+    })
+    if (addressIndex === -1) {
+      return res.status(404).json({ 
+        success: false,
+        statusCode: 404,
+        message: "Not found.",
+      });
+    }
+  
+    userInfo.addresses.splice(addressIndex, 1);
 
-  if(addressIndex < 0) return res.status(400).json({
-    success: false,
-    statusCode: 400,
-    message: "Invalid id."
-  })   
-
-  userInfo.addresses[addressIndex] = req.body
-  await userInfo.save()
-
-  return res.status(200).json({
-    success: true,
-    statusCode: 200,
-    message: "Address updated successfully.",
-    newAddress: req.body
-  })   
+    await userInfo.save()
+  
+    return res.status(200).json({
+      success: true,
+      statusCode: 200,
+      message: "Address deleted successfully."
+    })   
+  } catch(err) {
+    next(err)
+  }
 }

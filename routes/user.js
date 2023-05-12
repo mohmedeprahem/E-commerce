@@ -4,7 +4,7 @@ const router = express.Router();
 
 // controller files
 const { getUserProfile, putUserName } = require('../controller/user')
-const { postNewAddress, getUserAddresses, updateUserAddress } = require('../controller/address')
+const { postNewAddress, getUserAddresses, updateUserAddress, deleteUserAddress } = require('../controller/address')
 
 // @route: 'GET'  /api/v1/user/profile
 // @disc: Get user info   
@@ -32,3 +32,8 @@ module.exports = router
 // @disc: update user address   
 // @access: private(logged in user)
 router.put('/api/v1/address/:addressId', updateUserAddress)
+
+// @route: 'DELETE'  /api/v1/address/addressId
+// @disc: Delete user delete
+// @access: private(logged in user)
+router.delete('/api/v1/address/:addressId', deleteUserAddress)
