@@ -49,15 +49,14 @@ exports.postNewAddress = async (req, res, next) => {
   }
 }
 
-// @route: 'PUT'  /api/v1/address
-// @disc: put user address   
+// @route: 'GET'  api/v1/address
+// @disc: Get user addresses   
 // @access: private(logged in user)
 exports.getUserAddresses = async (req, res, next) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = 10;
 
-    // Find user addresses
     const userInfo = await UserSchema.findById(req.user.id).select('addresses')
 
     const totalAddresses = userInfo.addresses.length;
@@ -71,13 +70,58 @@ exports.getUserAddresses = async (req, res, next) => {
       success: true,
       statusCode: 200,
       message: "User addresses.",
-      totalItemsCount: 20,
-      maxPages: 2,
-      currentPage: 1,
+      totalItemsCount: totalAddresses,
+      maxPages: Math.ceil(totalAddresses / limit),
+      currentPage: page,
       itemPerPage: 10,
       userAddresses: subsetOfAddresses
     })   
   } catch (err) {
     next(err)
   }
+}
+
+// @route: 'PUT'  /api/v1/address/addressId
+// @disc: update user address   
+// @access: private(logged in user)
+exports.updateUserAddress = async (req, res, next) => {
+  // Get user Addresses
+  const userInfo = await UserSchema.findById(req.user.id).select('addresses')
+  
+  if (!userInfo) return res.status(500).json({
+    success: false,
+    statusCode: 500,
+    message: "Server error."
+  })
+
+  // Udatate the address
+  const addressDataValid = AddressJoiSchema.validate(req.body); 
+  if (addressDataValid.error) {
+    console.log(addressDataValid)
+    return res.status(400).json({
+      success: false,
+      statusCode: 400,
+      message: "Bad request."
+    })
+  }
+
+  const addressIndex = userInfo.addresses.findIndex(address => {
+    return address._id == req.params.addressId
+  })
+
+  if(addressIndex < 0) return res.status(400).json({
+    success: false,
+    statusCode: 400,
+    message: "Invalid id."
+  })   
+
+  userInfo.addresses[addressIndex] = req.body
+  await userInfo.save()
+
+  return res.status(200).json({
+    success: true,
+    statusCode: 200,
+    message: "Address updated successfully.",
+    newAddress: req.body
+  })   
 }

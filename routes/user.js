@@ -4,7 +4,7 @@ const router = express.Router();
 
 // controller files
 const { getUserProfile, putUserName } = require('../controller/user')
-const { postNewAddress, getUserAddresses } = require('../controller/address')
+const { postNewAddress, getUserAddresses, updateUserAddress } = require('../controller/address')
 
 // @route: 'GET'  /api/v1/user/profile
 // @disc: Get user info   
@@ -27,3 +27,8 @@ router.post('/api/v1/address', postNewAddress);
 router.get('/api/v1/address', getUserAddresses);
 
 module.exports = router
+
+// @route: 'PUT'  /api/v1/address/addressId
+// @disc: update user address   
+// @access: private(logged in user)
+router.put('/api/v1/address/:addressId', updateUserAddress)
