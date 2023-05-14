@@ -31,9 +31,9 @@ const productSchema = new mongoose.Schema({
     type: [String],
     required: true
   },
-  available: {
+  outOfStock: {
     type: Boolean,
-    default: true
+    default: false
   },
   rateCounter: {
     type: Number,

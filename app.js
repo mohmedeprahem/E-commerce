@@ -22,6 +22,8 @@ const authRoutes = require('./routes/auth')
 app.use(authRoutes)
 const userRoutes = require('./routes/user')
 app.use(userRoutes)
+const productRoutes = require('./routes/product')
+app.use(productRoutes)
 
 // Error hander
 const errorHander = require('./middlewares/errorHander')
