@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <h1>Image Upload and Data Submission</h1>
+
+  <h1>Upload Images and Data</h1>
+
+  <form id="uploadForm" enctype="multipart/form-data">
+    <div>
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+    </div>
+    <div>
+        <label for="price">Price:</label>
+        <input type="number" id="price" name="price" required>
+    </div>
+    <div>
+        <label for="color">Color:</label>
+        <input type="text" id="color" name="color" required>
+    </div>
+    <div>
+        <label for="size">Size:</label>
+        <input type="text" id="size" name="size" required>
+    </div>
+    <div>
+        <label for="productInfo">Product Info:</label>
+        <input type="text" id="productInfo" name="productInfo" required>
+    </div>
+    <div>
+        <label for="desc">Description:</label>
+        <input type="text" id="desc" name="desc" required>
+    </div>
+    <div>
+        <label for="images">Images:</label>
+        <input type="file" id="images" name="images" multiple required>
+    </div>
+    <div>
+        <input type="submit" value="Upload">
+    </div>
+</form>
+
+<script>
+    document.getElementById('uploadForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent the form from submitting
+        
+
+        let form = event.target;
+        let formData = new FormData(form);
+        let size = formData.get('size').split(',');
+        let color = formData.get('color').split(',');
+        
+        // Update the form data with the converted arrays
+        formData.delete('size');
+        formData.delete('color');
+        size.forEach(function(value, index) {
+            formData.append('size[]', value.trim());
+        });
+        color.forEach(function(value, index) {
+            formData.append('color[]', value.trim());
+        });
+        fetch('http://localhost:3000/api/v1/product', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Handle the response from the server
+            console.log(data);
+        })
+        .catch(error => {
+            // Handle errors
+            console.error(error);
+        });
+    });
+</script>
+</body>
+</html>

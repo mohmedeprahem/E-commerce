@@ -19,17 +19,21 @@ const productSchema = new mongoose.Schema({
     type: [String],
     required: true
   },
-  colors: {
+  color: {
     type: [String],
     required: true
   },
-  sizes: {
+  size: {
     type: [String],
     required: true
   },
   productInfo: {
     type: [String],
     required: true
+  },
+  desc: {
+    type: String,
+    default: false
   },
   outOfStock: {
     type: Boolean,
