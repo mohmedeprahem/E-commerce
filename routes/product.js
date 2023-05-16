@@ -2,7 +2,8 @@
 const express = require('express');
 const {
   postProduct,
-  getProductSlider
+  getProductSlider,
+  getProductatHomePage
 } = require('../controller/product');
 const router = express.Router();
 
@@ -18,5 +19,10 @@ router.post('/api/v1/product', upload.array('images'), postProduct)
 // @disc: Get card slider images
 // @access: public
 router.get('/api/v1/products/slider', getProductSlider)
+
+// @route: 'GET'  api/v1/products/home
+// @disc: Get products at home page
+// @access: public
+router.get('/api/v1/products/home', getProductatHomePage)
 
 module.exports = router

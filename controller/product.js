@@ -62,26 +62,86 @@ exports.postProduct = async (req, res, next) => {
 // @disc: Get card slider images
 // @access: public
 exports.getProductSlider = async (req, res, next) => {
-  const productsInfo = await ProductSchema.find().sort({ timestamp: -1 }).limit(5).select('_id imgs')
+  try {
+    const productsInfo = await ProductSchema.find().sort({ timestamp: -1 }).limit(5).select('_id imgs')
 
-  const cardSlider = productsInfo.map(product => {
-    return {
-      _id: product._id,
-      img: product.imgs[0]
-    }
-  })
-
-  if (!cardSlider.length) {
-    return res.status(404).json({
-      success: false,
-      statusCode: 404,
-      message: "Not Found."
+    const cardSlider = productsInfo.map(product => {
+      return {
+        _id: product._id,
+        img: product.imgs[0]
+      }
     })
+  
+    if (!cardSlider.length) {
+      return res.status(404).json({
+        success: false,
+        statusCode: 404,
+        message: "Not Found."
+      })
+    }
+    return res.status(200).json({
+      success: true,
+      statusCode: 200,
+      message: "Card slider imgs.",
+      cardSlider: cardSlider
+    })
+  } catch (err) {
+    next(err)
   }
-  return res.status(200).json({
-    success: true,
-    statusCode: 200,
-    message: "Card slider imgs.",
-    cardSlider: cardSlider
-  })
+}
+
+// @route: 'GET'  api/v1/products/home
+// @disc: Get products at home page
+// @access: public
+exports.getProductatHomePage = async (req, res, next) => {
+  try {
+    const inStockHighestRatedProducts = await ProductSchema.find({
+      outOfStock: false
+    })
+    .sort({ starRating: -1 })
+    .limit(2)
+    .select({
+      id: "_id",
+      image: { $arrayElemAt: ['$imgs', 0] },
+      name: 1,
+      price: 1,
+      outOfStock: 1,
+      _id: 0
+    })
+
+    const outOfStockHighestRatedProducts = await ProductSchema.find({
+      outOfStock: true
+    })
+    .sort({ starRating: -1 })
+    .limit(1)
+    .select({
+      id: "_id",
+      image: { $arrayElemAt: ['$imgs', 0] },
+      name: 1,
+      price: 1,
+      outOfStock: 1,
+      _id: 0
+    })
+
+    const bestSellerProducts = await ProductSchema.find().sort({ soldCount: -1 }).limit(6)
+    .select({
+      id: "_id",
+      image: { $arrayElemAt: ['$imgs', 0] },
+      name: 1,
+      price: 1,
+      outOfStock: 1,
+      _id: 0
+    })
+
+    return res.status(200).json({
+      success: true,
+      statusCode: 200,
+      message: "Home page products.",
+      inStockHighestRatedProducts,
+      outOfStockHighestRatedProducts,
+      bestSellerProducts
+    })
+  } catch (err) {
+    next(err)
+  }
 }
