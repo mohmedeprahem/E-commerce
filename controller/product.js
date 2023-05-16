@@ -57,3 +57,31 @@ exports.postProduct = async (req, res, next) => {
     next(err)
   }
 }
+
+// @route: 'GET'  api/v1/products/slider
+// @disc: Get card slider images
+// @access: public
+exports.getProductSlider = async (req, res, next) => {
+  const productsInfo = await ProductSchema.find().sort({ timestamp: -1 }).limit(5).select('_id imgs')
+
+  const cardSlider = productsInfo.map(product => {
+    return {
+      _id: product._id,
+      img: product.imgs[0]
+    }
+  })
+
+  if (!cardSlider.length) {
+    return res.status(404).json({
+      success: false,
+      statusCode: 404,
+      message: "Not Found."
+    })
+  }
+  return res.status(200).json({
+    success: true,
+    statusCode: 200,
+    message: "Card slider imgs.",
+    cardSlider: cardSlider
+  })
+}
