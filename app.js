@@ -3,6 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 require('dotenv').config()
 const cookieParser = require('cookie-parser');
+const path = require('path')
 
 // inti express
 const app = express();
@@ -19,6 +20,9 @@ app.use(express.json())
 
 // Inti cookie parser
 app.use(cookieParser());
+
+// Access to public folder
+app.use(express.static(path.join(__dirname, 'public/upload/img')));
 
 // save user info in req.user
 const { getUserInfo } = require('./middlewares/getcookie')

@@ -33,7 +33,7 @@ exports.postProduct = async (req, res, next) => {
 
     if (req.files) {
       req.files.forEach(element => {
-        imgsPath.push(element.path)
+        imgsPath.push(element.filename)
       });
     }
 
