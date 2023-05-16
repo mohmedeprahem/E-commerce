@@ -4,7 +4,8 @@ const {
   postProduct,
   getProductSlider,
   getProductatHomePage,
-  getAllPruducts
+  getAllPruducts,
+  getSearchProducts
 } = require('../controller/product');
 const router = express.Router();
 
@@ -30,5 +31,10 @@ router.get('/api/v1/products/home', getProductatHomePage)
 // @disc: Get all product
 // @access: public
 router.get('/api/v1/products/all', getAllPruducts)
+
+// @route: 'GET'  api/v1/products/search?product=T-Shirt&page=1
+// @disc: Search product based on product name
+// @access: public
+router.get('/api/v1/products/search', getSearchProducts)
 
 module.exports = router

@@ -201,3 +201,42 @@ exports.getAllPruducts = async (req, res, next) => {
     next (err)
   }
 }
+
+// @route: 'GET'  api/v1/products/search?product=T-Shirt&page=1
+// @disc: Search product based on product name
+// @access: public
+exports.getSearchProducts = async (req, res, next) => {
+  try {
+    const filter = {}
+    const page = parseInt(req.query.page) || 1;
+    const limit = 10;
+    const offset = (page - 1) * limit;
+
+    if (req.query.product) {
+      filter.name = req.query.product
+    }
+    console.log(filter)
+
+    const productsInfo = await ProductSchema.find(filter).skip(offset).limit(limit).select({
+      id: "_id",
+      image: { $arrayElemAt: ['$imgs', 0] },
+      name: 1,
+      _id: 0
+    })
+
+    const totalItemsCount = await ProductSchema.countDocuments(filter); // Get the total count of items based on the filter
+
+    return res.status(200).json({
+      success: true,
+      statusCode: 200,
+      message: "All Products.",
+      totalItemsCount,
+      maxPages: Math.ceil(totalItemsCount / limit),
+      currentPage: page,
+      itemPerPage: 10,
+      products: productsInfo
+    })
+  } catch (err) {
+    next(err)
+  }
+}
