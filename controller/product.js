@@ -240,3 +240,40 @@ exports.getSearchProducts = async (req, res, next) => {
     next(err)
   }
 }
+
+// @route: 'GET' /api/v1/products/singleProduct/:productId
+// @disc: Get product info
+// @access: public
+exports.getProductInfo = async (req, res, next) => {
+  try{
+    const productInfos = await ProductSchema.findById(req.params.productId)
+
+    if (!productInfos) {
+      return res.status(404).json({
+        success: false,
+        statusCode: 404,
+        message: "Not found."
+      })
+    }
+
+    return res.status(200).json({
+      success: true,
+      statusCode: 200,
+      message: "Product data.",
+      product: {
+        _id: productInfos._id,
+        imgs: productInfos.imgs,
+        name: productInfos.name,
+        price: productInfos.price,
+        totalRates: productInfos.soldCount,
+        size: productInfos.size,
+        color: productInfos.color,
+        productInfo: productInfos.productInfo,
+        description: productInfos.desc,
+        outOfStock: productInfos.outOfStock
+      }
+    }) 
+  } catch(err) {
+    next(err)
+  }
+}
