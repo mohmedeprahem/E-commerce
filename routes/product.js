@@ -3,7 +3,8 @@ const express = require('express');
 const {
   postProduct,
   getProductSlider,
-  getProductatHomePage
+  getProductatHomePage,
+  getAllPruducts
 } = require('../controller/product');
 const router = express.Router();
 
@@ -24,5 +25,10 @@ router.get('/api/v1/products/slider', getProductSlider)
 // @disc: Get products at home page
 // @access: public
 router.get('/api/v1/products/home', getProductatHomePage)
+
+// @route: 'GET'  api/v1/products/all?page=1&outOfStock=true&minPrice=200&maxPrice=500
+// @disc: Get all product
+// @access: public
+router.get('/api/v1/products/all', getAllPruducts)
 
 module.exports = router

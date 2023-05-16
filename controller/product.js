@@ -145,3 +145,59 @@ exports.getProductatHomePage = async (req, res, next) => {
     next(err)
   }
 }
+
+// @route: 'GET'  api/v1/products/all?page=1&outOfStock=true&minPrice=200&maxPrice=500
+// @disc: Get all product
+// @access: public
+exports.getAllPruducts = async (req, res, next) => {
+  try {
+    const filter = {}
+
+    if (req.query.outOfStock) {
+      filter.outOfStock = req.query.outOfStock === 'true'
+    }
+
+    if (req.query.minPrice) {
+      filter.price = {
+        $gte: req.query.minPrice 
+      };
+    }
+    filter.price = {
+      $gte:  parseInt(req.query.minPrice) || 0
+    };
+
+    if (req.query.maxPrice) {
+      filter.price.$lte = parseInt(req.query.maxPrice)
+    }
+
+    const page = parseInt(req.query.page) || 1;
+    const limit = 10;
+    const offset = (page - 1) * limit;
+
+    console.log(filter)
+
+    const productsInfo = await ProductSchema.find(filter).skip(offset).limit(limit).select({
+      id: "_id",
+      image: { $arrayElemAt: ['$imgs', 0] },
+      name: 1,
+      price: 1,
+      outOfStock: 1,
+      _id: 0
+    })
+
+    const totalItemsCount = await ProductSchema.countDocuments(filter); // Get the total count of items based on the filter
+
+    return res.status(200).json({
+      success: true,
+      statusCode: 200,
+      message: "All Products.",
+      totalItemsCount,
+      maxPages: Math.ceil(totalItemsCount / limit),
+      currentPage: page,
+      itemPerPage: 10,
+      products: productsInfo
+    })
+  } catch(err) {
+    next (err)
+  }
+}
