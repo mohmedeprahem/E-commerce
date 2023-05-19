@@ -6,7 +6,8 @@ const {
   getProductatHomePage,
   getAllPruducts,
   getSearchProducts,
-  getProductInfo
+  getProductInfo,
+  getSuggestProduct
 } = require('../controller/product');
 const router = express.Router();
 
@@ -42,5 +43,10 @@ router.get('/api/v1/products/search', getSearchProducts)
 // @disc: Get product info
 // @access: public
 router.get('/api/v1/products/singleProduct/:productId', getProductInfo)
+
+// @route: 'GET' api/v1/products/suggestedProducts
+// @disc: Get suggested products related
+// @access: public
+router.get('/api/v1/products/suggestedProducts', getSuggestProduct)
 
 module.exports = router

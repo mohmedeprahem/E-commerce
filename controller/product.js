@@ -277,3 +277,37 @@ exports.getProductInfo = async (req, res, next) => {
     next(err)
   }
 }
+
+// @route: 'GET' api/v1/products/suggestedProducts
+// @disc: Get suggested products related
+// @access: public
+exports.getSuggestProduct = async (req, res, next) => {
+  try {
+    const productInfos = await ProductSchema.aggregate([
+      { $sample: { size: 8 } },
+      { $project: { name: 1, img: { $arrayElemAt: ['$imgs', 0] }, price: 1 } }
+    ])
+
+    console.log(productInfos);
+
+    if (!productInfos.length) {
+      return res.status(200).json({
+        success: false,
+        statusCode: 404,
+        message: "Not Found.",
+        
+      })
+  
+    }
+
+    return res.status(200).json({
+      success: true,
+      statusCode: 200,
+      message: "Product data.",
+      suggestedProduct: productInfos
+    })
+
+  } catch (err) {
+    next(err)
+  }
+}
