@@ -39,7 +39,11 @@ const productSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
-  soldCount: {
+  countRates: {
+    type: Number,
+    default: 0
+  },
+  sumRates: {
     type: Number,
     default: 0
   },
