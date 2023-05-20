@@ -71,15 +71,43 @@ exports.getCart = async (req, res, next) => {
   }
 }
 
-// @route: 'DELETE'  api/v1/cart/:cartId
+// @route: 'DELETE'  api/v1/cart/:productId
 // @disc: Delete products from the cart.
 // @access: private(user: logged in)
 exports.deletePorductCart = async (req, res, next) => {
   try {
-    const cartInfo = await cartSchema.deleteOne({ _id: req.params.cartId });
-    console.log(cartInfo)
+    const cartInfo = await cartSchema.findOne({
+      userId: req.user.id
+    });
+    if (!cartInfo) {
+      return res.status(404).json({
+        success: false,
+        statusCode: 404,
+        message: "Item Not Found."
+      })
+    }
 
-    return res.status(204)
+    const itemIndex = cartInfo.items.findIndex(item => item.productId == req.params.productId);
+
+    if (itemIndex === -1) {
+      return res.status(404).json({
+        success: false,
+        statusCode: 404,
+        message: "Item Not Found."
+      })
+    }
+    
+    cartInfo.bill -=  (cartInfo.items[itemIndex].quantity * cartInfo.items[itemIndex].price)
+    
+
+    cartInfo.items.splice(itemIndex, 1);
+
+    await cartInfo.save()
+
+    console.log(123)
+
+
+    return res.status(204).json({})
   } catch (err) {
     next(err)
   }
