@@ -1,18 +1,31 @@
 // Package requirement
+const { string, number } = require('joi');
 const mongoose = require('mongoose');
 
 // Build sub-document items that want to buy from user
 const itemSchema = mongoose.Schema({
-  productIds: {
+  productId: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
     ref: 'Product'
   },
-  quantity: Number,
-  color: String,
-  size: String,
-  price: Number
-}, {_id: false, timestamps: false, versionKey: false, strict: false, embedded: true})
+  quantity: {
+    type: Number,
+    required: true,
+  },
+  color: {
+    type: String,
+    required: true,
+  },
+  size: {
+    type: String,
+    required: true,
+  },
+  price: {
+    type: Number,
+    required: true,
+  }
+}, {_id: true, timestamps: false, versionKey: false, strict: false, embedded: true})
 
 // Build cart schema
 const cartSchema = mongoose.Schema({
@@ -25,7 +38,10 @@ const cartSchema = mongoose.Schema({
     type: [itemSchema],
     required: false
   },
-  bill: Number
+  bill: {
+    type: Number,
+    default: 0
+  }
 });
 
 const Cart = mongoose.model('Cart', cartSchema);
