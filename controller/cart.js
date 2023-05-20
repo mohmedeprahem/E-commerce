@@ -4,7 +4,7 @@ const ProductSchema = require('../models/product')
 // @route: 'POST'  api/v1/cart/:productId
 // @disc: add product to cart
 // @access: private(user: logged in)
-exports.addProduct = async (req, res, next) => {
+exports.addProductCart = async (req, res, next) => {
   try {
     // check if product id found
     const productInfo = await ProductSchema.findById(req.params.productId);
@@ -66,6 +66,20 @@ exports.getCart = async (req, res, next) => {
       bill: cartInfo.bill || 0,
       products: cartInfo.items || []
     })
+  } catch (err) {
+    next(err)
+  }
+}
+
+// @route: 'DELETE'  api/v1/cart/:cartId
+// @disc: Delete products from the cart.
+// @access: private(user: logged in)
+exports.deletePorductCart = async (req, res, next) => {
+  try {
+    const cartInfo = await cartSchema.deleteOne({ _id: req.params.cartId });
+    console.log(cartInfo)
+
+    return res.status(204)
   } catch (err) {
     next(err)
   }
