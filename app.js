@@ -8,18 +8,24 @@ const path = require('path')
 // inti express
 const app = express();
 
-
+// CORS security
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', '*');
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', '*');
   next();
 });
 
-// parse the req.body
-app.use(express.json())
+// checkout routes saved here bec data parse in diff way
+const checkoutRoute = require('./routes/checkout')
+app.use(checkoutRoute)
 
 // Inti cookie parser
 app.use(cookieParser());
+
+// parse the req.body
+app.use(express.json())
 
 // Access to public folder
 app.use(express.static(path.join(__dirname, 'public/upload/img')));
@@ -29,6 +35,10 @@ const { getUserInfo } = require('./middlewares/getcookie')
 app.use(getUserInfo)
 
 // active routes
+app.get('/success',express.raw({ type: 'application/json' }), (req, res) => {
+  res.sendFile(__dirname + '/views/success.html');
+})
+
 const authRoutes = require('./routes/auth')
 app.use(authRoutes)
 const userRoutes = require('./routes/user')
@@ -46,7 +56,7 @@ app.use(errorHander)
 mongoose.connect(`mongodb+srv://mohmed123:mohmed123@board-game-shop.vsepsuu.mongodb.net/e_commerce`)
 .then(() => console.log(`Connect to database....`))
 
-// Connect to server
+// Connect to server robust-aspire-soft-bliss
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`Connect to server at port: ${port}...`)

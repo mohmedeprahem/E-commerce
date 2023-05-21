@@ -6,8 +6,14 @@ const router = express.Router();
 const {
   addProductCart,
   getCart,
-  deletePorductCart
+  deletePorductCart,
+  checkout
 } = require('../controller/cart')
+
+// @route: 'GET'  api/v1/cart/checkout
+// @disc: checkout
+// @access: private(user: logged in)
+router.get('/api/v1/cart/checkout', checkout)
 
 // @route: 'POST'  api/v1/cart/:productId
 // @disc: add product to cart

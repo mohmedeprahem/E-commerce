@@ -1,5 +1,8 @@
+const stripe = require('stripe')(process.env.STRIPE_SECRITE_KEY);
+
 const cartSchema = require('../models/cart')
 const ProductSchema = require('../models/product')
+const orderSchema = require('../models/order')
 
 // @route: 'POST'  api/v1/cart/:productId
 // @disc: add product to cart
@@ -104,11 +107,44 @@ exports.deletePorductCart = async (req, res, next) => {
 
     await cartInfo.save()
 
-    console.log(123)
-
-
     return res.status(204).json({})
   } catch (err) {
+    next(err)
+  }
+}
+
+// @route: 'GET'  api/v1/cart/payUrl
+// @disc: get pay url page
+// @access: private(user: logged in)
+exports.checkout = async (req, res, next) => {
+
+  try {
+    const paymentIntent = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: [
+        {
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: 'T-shirt',
+            },
+            unit_amount: 2000,
+          },
+          quantity: 1,
+        },
+      ],
+      mode: 'payment',
+      success_url: 'http://localhost:3000/success',
+      cancel_url: 'http://localhost:3000/cancel',
+    });
+
+    
+    return res.status(200).json({
+      success: true,
+      statusCode: 200,
+      checkoutUrl: paymentIntent.url
+    })
+  } catch(err) {
     next(err)
   }
 }

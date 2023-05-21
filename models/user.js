@@ -76,8 +76,8 @@ const userSchema = new mongoose.Schema({
   otpCreatedAt: Date,
   paymentInfo: {
     cardNumber: Number,
-    expirationMonth: Number,
-    expirationYear: Number,
+    expMonth: Number,
+    expYear: Number,
     CardNames: String,
   },
   addresses: {
