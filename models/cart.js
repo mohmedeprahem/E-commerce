@@ -20,10 +20,6 @@ const itemSchema = mongoose.Schema({
   size: {
     type: String,
     required: true,
-  },
-  price: {
-    type: Number,
-    required: true,
   }
 }, {_id: true, timestamps: false, versionKey: false, strict: false, embedded: true})
 

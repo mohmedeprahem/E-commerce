@@ -37,6 +37,7 @@ exports.postProduct = async (req, res, next) => {
       });
     }
 
+    console.log(parseFloat(req.body.price))
     const result = await new ProductSchema({
       name: req.body.name,
       imgs: imgsPath,
@@ -46,7 +47,7 @@ exports.postProduct = async (req, res, next) => {
       productInfo: req.body.productInfo,
       desc: req.body.desc
     })
-    result.save()
+    await result.save()
     
     return res.status(201).json({
       succes: true,

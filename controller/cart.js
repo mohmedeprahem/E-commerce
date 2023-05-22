@@ -117,22 +117,32 @@ exports.deletePorductCart = async (req, res, next) => {
 // @disc: get pay url page
 // @access: private(user: logged in)
 exports.checkout = async (req, res, next) => {
-
   try {
+    const cartPorduct = await cartSchema.findOne({ userId: req.user.id }).populate('items.productId')
+    
+    if (!cartPorduct || !cartPorduct.items.length) {
+      return res.status(404).json({
+        success: false,
+        statusCode: 404,
+        message: 'No products in cart'
+      })
+    };
+
+    console.log(cartPorduct.items[0].productId.price)
     const paymentIntent = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
-      line_items: [
-        {
+      line_items: cartPorduct.items.map(item => {
+        return {
           price_data: {
             currency: 'usd',
             product_data: {
-              name: 'T-shirt',
+              name: item.productId.name
             },
-            unit_amount: 2000,
+            unit_amount: item.productId.price * 100
           },
-          quantity: 1,
-        },
-      ],
+          quantity: item.quantity
+        }
+      }),
       mode: 'payment',
       success_url: 'http://localhost:3000/success',
       cancel_url: 'http://localhost:3000/cancel',
