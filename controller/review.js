@@ -105,3 +105,49 @@ exports.getReviews = async (req, res, next) => {
     next(err)
   }
 }
+
+// @route: 'DELETE'  api/v1/reviews/:reviewId
+// @disc: delete review
+// @access: private(user: review owner)
+exports.deleteReview = async (req, res, next) => {
+  try {
+    const reviewInfo = await reviewSchema.findById(req.params.reviewId)
+    if (!reviewInfo) {
+      return res.status(404).json({
+        success: false,
+        statusCode: 404,
+        message: "Not Found."
+      })
+    }
+
+    // check if user authorized
+    if (!reviewInfo.userId === req.user.id) {
+      return res.status(403).json({
+        success: false,
+        statusCode: 403,
+        message: "Forbidden."
+      })
+    }
+
+
+    console.log(reviewInfo)
+    const product = await ProductSchema.updateOne({ _id: reviewInfo.productId }, {
+      $inc: {
+        countRates: -1,
+        sumRates: -reviewInfo.rate
+      }
+    })
+
+    console.log(product)
+
+    await reviewInfo.deleteOne();
+
+    return res.status(200).json({
+      success: true,
+      statusCode: 200,
+      message: "Review deleted successfully."
+    })
+  } catch (err) {
+    next(err)
+  }
+}
