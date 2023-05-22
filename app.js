@@ -47,6 +47,8 @@ const productRoutes = require('./routes/product')
 app.use(productRoutes)
 const cartRoutes = require('./routes/cart')
 app.use(cartRoutes)
+const reviewRoutes = require('./routes/review')
+app.use(reviewRoutes)
 
 // Error hander
 const errorHander = require('./middlewares/errorHander')

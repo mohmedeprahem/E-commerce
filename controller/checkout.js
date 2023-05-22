@@ -24,7 +24,7 @@ exports.handerCompletePay =  async (request, response) => {
       const cart = await cartSchema.findById(paymentIntentSucceeded.metadata.cartId)
 
       // create order
-      const order = await new orderSchema({
+      const order = await  orderSchema.create({
         price: paymentIntentSucceeded.amount / 100,
         userId: cart.userId,
         productIds: cart.items.map(item => {
