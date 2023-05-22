@@ -5,7 +5,8 @@ const router = express.Router();
 const {
   postReview, 
   getReviews,
-  deleteReview
+  deleteReview,
+  putReview
 } = require('../controller/review');
 
 // @route: 'POST'  api/v1/reviews/addNewReview/:productId
@@ -23,4 +24,9 @@ router.get('/api/v1/product/reviews/:productId', getReviews)
 // @access: private(user: review owner)
 router.delete('/api/v1/reviews/:reviewId', deleteReview)
 
+
+// @route: 'DELETE'  api/v1/reviews/:reviewId
+// @disc: Edit review
+// @access: private(user: review owner)
+router.put('/api/v1/reviews/:reviewId', putReview)
 module.exports = router 

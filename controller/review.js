@@ -129,16 +129,12 @@ exports.deleteReview = async (req, res, next) => {
       })
     }
 
-
-    console.log(reviewInfo)
-    const product = await ProductSchema.updateOne({ _id: reviewInfo.productId }, {
+    await ProductSchema.updateOne({ _id: reviewInfo.productId }, {
       $inc: {
         countRates: -1,
         sumRates: -reviewInfo.rate
       }
     })
-
-    console.log(product)
 
     await reviewInfo.deleteOne();
 
@@ -147,6 +143,54 @@ exports.deleteReview = async (req, res, next) => {
       statusCode: 200,
       message: "Review deleted successfully."
     })
+  } catch (err) {
+    next(err)
+  }
+}
+
+// @route: 'DELETE'  api/v1/reviews/:reviewId
+// @disc: Edit review
+// @access: private(user: review owner)
+exports.putReview = async (req, res, next) => {
+  try {
+    const rate = req.body.rate
+    const reviewInfo = await reviewSchema.findById(req.params.reviewId)
+    if (!reviewInfo) {
+      return res.status(404).json({
+        success: false,
+        statusCode: 404,
+        message: "Not Found."
+      })
+    }
+
+    // check if user authorized
+    if (!reviewInfo.userId === req.user.id) {
+      return res.status(403).json({
+        success: false,
+        statusCode: 403,
+        message: "Forbidden."
+      })
+    }
+
+    const newRate = rate - reviewInfo.rate
+    // Update review
+    reviewInfo.rate = req.body.rate
+    reviewInfo.comment = req.body.comment
+
+    await reviewInfo.save()
+
+    await ProductSchema.updateOne({ _id: reviewInfo.productId }, {
+      $inc: {
+        sumRates: newRate
+      }
+    })
+
+    return res.status(200).json({
+      success: true,
+      statusCode: 200,
+      message: "ٌٌٌReview updated successfully.",
+      reviews: reviewInfo
+    });
   } catch (err) {
     next(err)
   }
