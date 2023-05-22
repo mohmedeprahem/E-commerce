@@ -119,7 +119,7 @@ exports.deletePorductCart = async (req, res, next) => {
 exports.checkout = async (req, res, next) => {
   try {
     const cartPorduct = await cartSchema.findOne({ userId: req.user.id }).populate('items.productId')
-    
+
     if (!cartPorduct || !cartPorduct.items.length) {
       return res.status(404).json({
         success: false,
@@ -128,7 +128,6 @@ exports.checkout = async (req, res, next) => {
       })
     };
 
-    console.log(cartPorduct.items[0].productId.price)
     const paymentIntent = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: cartPorduct.items.map(item => {
@@ -136,13 +135,19 @@ exports.checkout = async (req, res, next) => {
           price_data: {
             currency: 'usd',
             product_data: {
-              name: item.productId.name
+              name: item.productId.name,
+              description: `Size: ${item.size}, Color: ${item.color}`
             },
             unit_amount: item.productId.price * 100
           },
           quantity: item.quantity
         }
       }),
+      payment_intent_data: {
+        metadata: {
+          cartId: cartPorduct._id.toString()
+        }
+      },
       mode: 'payment',
       success_url: 'http://localhost:3000/success',
       cancel_url: 'http://localhost:3000/cancel',

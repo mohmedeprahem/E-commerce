@@ -1,4 +1,6 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRITE_KEY);
+const cartSchema = require('../models/cart')
+const orderSchema = require('../models/order')
 
 // @route: 'post'  /webhook
 // @disc: save user order in database
@@ -19,10 +21,24 @@ exports.handerCompletePay =  async (request, response) => {
   switch (event.type) {
     case 'charge.succeeded':
       const paymentIntentSucceeded = event.data.object;
-      console.log(paymentIntentSucceeded.billing_details.email);
+      const cart = await cartSchema.findById(paymentIntentSucceeded.metadata.cartId)
+
+      // create order
+      const order = await new orderSchema({
+        price: paymentIntentSucceeded.amount / 100,
+        userId: cart.userId,
+        productIds: cart.items.map(item => {
+          return item.productId
+        })
+      })
+
+      // format cart
+      cart.items = []
+      cart.bill = 0
+      await cart.save()
       break;
     default:
-      console.log(`Unhandled event type ${event.type}`);
+      console.log(`Unhandled event type ${event}`);
   }
 
   // Return a 200 response to acknowledge receipt of the event

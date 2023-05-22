@@ -13,11 +13,11 @@ const orderSchema = mongoose.Schema({
     required: true,
     ref: 'userId'
   },
-  productIds: {
+  productIds: [{
     type: mongoose.Schema.Types.ObjectId,
     required: true,
     ref: 'Product'
-  }
+  }]
 }, { timestamps: true})
 
 const Order = mongoose.model('Order', orderSchema)
