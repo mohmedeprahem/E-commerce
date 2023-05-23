@@ -72,8 +72,10 @@ exports.verifyEmail = async (req, res, next) => {
       })
     }
 
+    const expiresIn = '3m'
+
     // login user by jwt and cookies
-    const token = jwt.sign({id: userInfo._id}, process.env.SECRET_KEY_JWT);
+    const token = jwt.sign({id: userInfo._id}, process.env.SECRET_KEY_JWT, { expiresIn });
 
     res.cookie('jwt', token, { httpOnly: true });
 
