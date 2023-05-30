@@ -55,7 +55,7 @@ const errorHander = require('./middlewares/errorHander')
 app.use(errorHander)
 
 // Connect to DataBase
-mongoose.connect(`mongodb+srv://mohmed123:mohmed123@board-game-shop.vsepsuu.mongodb.net/e_commerce`)
+mongoose.connect(process.env.DB_URL)
 .then(() => console.log(`Connect to database....`))
 
 // Connect to server robust-aspire-soft-bliss
